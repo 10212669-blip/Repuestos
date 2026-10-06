@@ -1,0 +1,158 @@
+<!-- src/main/resources/templates/producto_form.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${titulo} + ' - Repuestos Motos'"></title>
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">🏍️</div>
+                <h2>Tienda de <span>Repuestos</span></h2>
+            </div>
+            
+            <div class="sidebar-user">
+                <div class="user-avatar">
+                    <span th:text="${usuario.nombreCompleto.charAt(0)}"></span>
+                </div>
+                <div class="user-info">
+                    <p class="user-name" th:text="${usuario.nombreCompleto}"></p>
+                    <p class="user-email" th:text="${usuario.email}"></p>
+                    <span class="user-status">● En línea</span>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <p class="nav-title">MENÚ PRINCIPAL</p>
+                <ul>
+                    <li><a href="/dashboard"><i class="fas fa-home"></i> Dashboard</a></li>
+                    <li><a href="/ventas"><i class="fas fa-shopping-cart"></i> Ventas</a></li>
+                    <li><a href="/productos" class="active"><i class="fas fa-boxes"></i> Inventario</a></li>
+                    <li><a href="/productos"><i class="fas fa-tag"></i> Productos</a></li>
+                    <li><a href="/clientes"><i class="fas fa-users"></i> Clientes</a></li>
+                    <li><a href="/proveedores"><i class="fas fa-truck"></i> Proveedores</a></li>
+                    <li><a href="/bitacora"><i class="fas fa-history"></i> Bitácora</a></li>
+                </ul>
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="/logout" class="btn-logout-sidebar">
+                    <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                </a>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content-dashboard">
+            <div class="form-container">
+                <div class="table-header">
+                    <h3><i class="fas fa-box"></i> <span th:text="${titulo}"></span></h3>
+                    <a href="/productos" class="btn-add"><i class="fas fa-arrow-left"></i> Volver</a>
+                </div>
+
+                <form th:action="@{/productos/guardar}" th:object="${producto}" method="post">
+                    <input type="hidden" th:field="*{idProducto}">
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Código:</label>
+                            <input type="text" th:field="*{codigoProducto}" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Nombre:</label>
+                            <input type="text" th:field="*{nombreProducto}" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Descripción:</label>
+                        <textarea th:field="*{descripcion}" rows="3"></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Categoría:</label>
+                            <select th:field="*{categoria.idCategoria}">
+                                <option value="">Seleccionar...</option>
+                                <option th:each="cat : ${categorias}" 
+                                        th:value="${cat.idCategoria}" 
+                                        th:text="${cat.nombreCategoria}">
+                                </option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Marca:</label>
+                            <select th:field="*{marca.idMarca}">
+                                <option value="">Seleccionar...</option>
+                                <option th:each="m : ${marcas}" 
+                                        th:value="${m.idMarca}" 
+                                        th:text="${m.nombreMarca}">
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Proveedor:</label>
+                        <select th:field="*{proveedor.idProveedor}">
+                            <option value="">Seleccionar...</option>
+                            <option th:each="prov : ${proveedores}" 
+                                    th:value="${prov.idProveedor}" 
+                                    th:text="${prov.nombreEmpresa}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Precio Compra ($):</label>
+                            <input type="number" step="0.01" th:field="*{precioCompra}" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Precio Venta ($):</label>
+                            <input type="number" step="0.01" th:field="*{precioVenta}" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Stock Actual:</label>
+                            <input type="number" th:field="*{stockActual}" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Stock Mínimo:</label>
+                            <input type="number" th:field="*{stockMinimo}" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Stock Máximo:</label>
+                            <input type="number" th:field="*{stockMaximo}" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Ubicación:</label>
+                            <input type="text" th:field="*{ubicacionAlmacen}">
+                        </div>
+                        <div class="form-group">
+                            <label>Código Barras:</label>
+                            <input type="text" th:field="*{codigoBarras}">
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-save"><i class="fas fa-save"></i> Guardar</button>
+                        <a href="/productos" class="btn-cancel"><i class="fas fa-times"></i> Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

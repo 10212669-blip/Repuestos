@@ -1,0 +1,121 @@
+<!-- src/main/resources/templates/usuario_form.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${titulo} + ' - Repuestos Motos'"></title>
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">🏍️</div>
+                <h2>Tienda de <span>Repuestos</span></h2>
+            </div>
+            
+            <div class="sidebar-user">
+                <div class="user-avatar">
+                    <span th:text="${usuario.nombreCompleto.charAt(0)}"></span>
+                </div>
+                <div class="user-info">
+                    <p class="user-name" th:text="${usuario.nombreCompleto}"></p>
+                    <p class="user-email" th:text="${usuario.email}"></p>
+                    <span class="user-status">● En línea</span>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <p class="nav-title">MENÚ PRINCIPAL</p>
+                <ul>
+                    <li><a href="/dashboard"><i class="fas fa-home"></i> Dashboard</a></li>
+                    <li><a href="/ventas"><i class="fas fa-shopping-cart"></i> Ventas</a></li>
+                    <li><a href="/productos"><i class="fas fa-boxes"></i> Inventario</a></li>
+                    <li><a href="/productos"><i class="fas fa-tag"></i> Productos</a></li>
+                    <li><a href="/clientes"><i class="fas fa-users"></i> Clientes</a></li>
+                    <li><a href="/proveedores"><i class="fas fa-truck"></i> Proveedores</a></li>
+                    <li><a href="/compras"><i class="fas fa-shopping-bag"></i> Compras</a></li>
+<li><a href="/usuarios"><i class="fas fa-user-cog"></i> Usuarios</a></li>
+<li><a href="/bitacora"><i class="fas fa-history"></i> Bitácora</a></li>
+                    <li><a href="/usuarios" class="active"><i class="fas fa-user-cog"></i> Usuarios</a></li>
+                    <li><a href="/bitacora"><i class="fas fa-history"></i> Bitácora</a></li>
+                </ul>
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="/logout" class="btn-logout-sidebar">
+                    <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                </a>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content-dashboard">
+            <div class="form-container">
+                <div class="table-header">
+                    <h3><i class="fas fa-user-plus"></i> <span th:text="${titulo}"></span></h3>
+                    <a href="/usuarios" class="btn-add"><i class="fas fa-arrow-left"></i> Volver</a>
+                </div>
+
+                <form th:action="${usuarioNuevo.idUsuario != null ? '/usuarios/actualizar' : '/usuarios/guardar'}" 
+                      th:object="${usuarioNuevo}" method="post">
+                    
+                    <input type="hidden" th:field="*{idUsuario}">
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Usuario:</label>
+                            <input type="text" th:field="*{usuario}" required placeholder="Ej: juanperez">
+                        </div>
+                        <div class="form-group">
+                            <label>Nombre Completo:</label>
+                            <input type="text" th:field="*{nombreCompleto}" required placeholder="Ej: Juan Pérez">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Email:</label>
+                            <input type="email" th:field="*{email}" required placeholder="Ej: juan@email.com">
+                        </div>
+                        <div class="form-group">
+                            <label>Rol:</label>
+                            <select th:field="*{rol}" required>
+                                <option value="">Seleccionar...</option>
+                                <option value="Administrador">Administrador</option>
+                                <option value="Vendedor">Vendedor</option>
+                                <option value="Almacenero">Almacenero</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label th:text="${usuarioNuevo.idUsuario != null ? 'Nueva Contraseña (dejar vacío para no cambiar)' : 'Contraseña'}"></label>
+                            <input type="password" name="contrasenaPlana" 
+                                   th:required="${usuarioNuevo.idUsuario == null}"
+                                   placeholder="Mínimo 6 caracteres">
+                            <small style="color: #888; font-size: 12px;">🔐 Se encriptará automáticamente con BCrypt</small>
+                        </div>
+                        <div class="form-group">
+                            <label>Estado:</label>
+                            <select th:field="*{estado}">
+                                <option value="Activo">Activo</option>
+                                <option value="Inactivo">Inactivo</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-save"><i class="fas fa-save"></i> Guardar</button>
+                        <a href="/usuarios" class="btn-cancel"><i class="fas fa-times"></i> Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

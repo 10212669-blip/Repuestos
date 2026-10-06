@@ -1,0 +1,105 @@
+<!-- src/main/resources/templates/compras.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${titulo} + ' - Repuestos Motos'"></title>
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">🏍️</div>
+                <h2>Tienda de <span>Repuestos</span></h2>
+            </div>
+            
+            <div class="sidebar-user">
+                <div class="user-avatar">
+                    <span th:text="${usuario.nombreCompleto.charAt(0)}"></span>
+                </div>
+                <div class="user-info">
+                    <p class="user-name" th:text="${usuario.nombreCompleto}"></p>
+                    <p class="user-email" th:text="${usuario.email}"></p>
+                    <span class="user-status">● En línea</span>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <p class="nav-title">MENÚ PRINCIPAL</p>
+                <ul>
+                    <li><a href="/dashboard"><i class="fas fa-home"></i> Dashboard</a></li>
+                    <li><a href="/ventas"><i class="fas fa-shopping-cart"></i> Ventas</a></li>
+                    <li><a href="/productos"><i class="fas fa-boxes"></i> Inventario</a></li>
+                    <li><a href="/productos"><i class="fas fa-tag"></i> Productos</a></li>
+                    <li><a href="/clientes"><i class="fas fa-users"></i> Clientes</a></li>
+                    <li><a href="/proveedores"><i class="fas fa-truck"></i> Proveedores</a></li>
+                    <li><a href="/compras" class="active"><i class="fas fa-shopping-bag"></i> Compras</a></li>
+                </ul>
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="/logout" class="btn-logout-sidebar">
+                    <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                </a>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content-dashboard">
+            <div class="table-container">
+                <div class="table-header">
+                    <h3><i class="fas fa-shopping-bag"></i> Lista de Compras</h3>
+                    <a href="/compras/nuevo" class="btn-add"><i class="fas fa-plus"></i> Nueva Compra</a>
+                </div>
+
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Proveedor</th>
+                            <th>Fecha</th>
+                            <th>Total</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="c : ${compras}">
+                            <td th:text="${c.codigoCompra}"></td>
+                            <td th:text="${c.proveedor != null ? c.proveedor.nombreEmpresa : 'Sin proveedor'}"></td>
+                            <td th:text="${#temporals.format(c.fechaCompra, 'dd/MM/yyyy HH:mm')}"></td>
+                            <td>$<span th:text="${c.total}"></span></td>
+                            <td>
+                                <span class="badge badge-success" th:if="${c.estadoCompra == 'Recibido'}">Recibido</span>
+                                <span class="badge badge-warning" th:if="${c.estadoCompra == 'Pendiente'}">Pendiente</span>
+                                <span class="badge badge-danger" th:if="${c.estadoCompra == 'Cancelado'}">Cancelado</span>
+                            </td>
+                            <td>
+                                <div class="actions">
+                                    <a th:href="@{/compras/ver/{id}(id=${c.idCompra})}" class="btn-view"><i class="fas fa-eye"></i> Ver</a>
+                                    <a th:href="@{/compras/anular/{id}(id=${c.idCompra})}" 
+                                       class="btn-delete" 
+                                       th:if="${c.estadoCompra != 'Cancelado'}"
+                                       onclick="return confirm('¿Estás seguro de anular esta compra?')">
+                                       <i class="fas fa-ban"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr th:if="${compras.isEmpty()}">
+                            <td colspan="6" style="text-align: center; padding: 40px; color: #999;">
+                                📭 No hay compras registradas. 
+                                <a href="/compras/nuevo" style="color: #667eea;">Crear la primera</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

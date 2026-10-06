@@ -1,0 +1,136 @@
+<!-- src/main/resources/templates/usuarios.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${titulo} + ' - Repuestos Motos'"></title>
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">🏍️</div>
+                <h2>Tienda de <span>Repuestos</span></h2>
+            </div>
+            
+            <div class="sidebar-user">
+                <div class="user-avatar">
+                    <span th:text="${usuario.nombreCompleto.charAt(0)}"></span>
+                </div>
+                <div class="user-info">
+                    <p class="user-name" th:text="${usuario.nombreCompleto}"></p>
+                    <p class="user-email" th:text="${usuario.email}"></p>
+                    <span class="user-status">● En línea</span>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <p class="nav-title">MENÚ PRINCIPAL</p>
+                <ul>
+                    <li><a href="/dashboard"><i class="fas fa-home"></i> Dashboard</a></li>
+                    <li><a href="/ventas"><i class="fas fa-shopping-cart"></i> Ventas</a></li>
+                    <li><a href="/productos"><i class="fas fa-boxes"></i> Inventario</a></li>
+                    <li><a href="/productos"><i class="fas fa-tag"></i> Productos</a></li>
+                    <li><a href="/clientes"><i class="fas fa-users"></i> Clientes</a></li>
+                    <li><a href="/proveedores"><i class="fas fa-truck"></i> Proveedores</a></li>
+                    <li><a href="/compras"><i class="fas fa-shopping-bag"></i> Compras</a></li>
+<li><a href="/usuarios"><i class="fas fa-user-cog"></i> Usuarios</a></li>
+<li><a href="/bitacora"><i class="fas fa-history"></i> Bitácora</a></li>
+                    <li><a href="/usuarios" class="active"><i class="fas fa-user-cog"></i> Usuarios</a></li>
+                    <li><a href="/bitacora"><i class="fas fa-history"></i> Bitácora</a></li>
+                </ul>
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="/logout" class="btn-logout-sidebar">
+                    <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                </a>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content-dashboard">
+            <div class="table-container">
+                <div class="table-header">
+                    <h3><i class="fas fa-user-cog"></i> Gestión de Usuarios</h3>
+                    <div style="display: flex; gap: 10px;">
+                        <a href="/usuarios/encriptar-todas" class="btn-add" style="background: #f59e0b;" 
+                           onclick="return confirm('¿Encriptar todas las contraseñas que están en texto plano?')">
+                            <i class="fas fa-lock"></i> Encriptar Todas
+                        </a>
+                        <a href="/usuarios/nuevo" class="btn-add">
+                            <i class="fas fa-plus"></i> Nuevo Usuario
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Mensajes -->
+                <div th:if="${param.passwordCambiada}" style="background: #e8f5e9; color: #2e7d32; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                    ✅ Contraseña cambiada correctamente
+                </div>
+                <div th:if="${param.encriptadas}" style="background: #e8f5e9; color: #2e7d32; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                    ✅ Se encriptaron <strong th:text="${param.encriptadas}"></strong> contraseñas
+                </div>
+
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Usuario</th>
+                            <th>Nombre Completo</th>
+                            <th>Email</th>
+                            <th>Rol</th>
+                            <th>Contraseña</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="u : ${usuarios}">
+                            <td th:text="${u.idUsuario}"></td>
+                            <td><strong th:text="${u.usuario}"></strong></td>
+                            <td th:text="${u.nombreCompleto}"></td>
+                            <td th:text="${u.email}"></td>
+                            <td>
+                                <span class="badge" 
+                                      th:classappend="${u.rol == 'Administrador' ? 'badge-danger' : 'badge-info'}"
+                                      th:text="${u.rol}"></span>
+                            </td>
+                            <td>
+                                <!-- Indicador de contraseña encriptada -->
+                                <span th:if="${u.contrasena != null && u.contrasena.startsWith('$2a$')}" 
+                                      class="badge badge-success">
+                                    🔐 Encriptada
+                                </span>
+                                <span th:unless="${u.contrasena != null && u.contrasena.startsWith('$2a$')}" 
+                                      class="badge badge-warning">
+                                    ⚠️ Texto Plano
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge badge-success" th:if="${u.estado == 'Activo'}">Activo</span>
+                                <span class="badge badge-danger" th:unless="${u.estado == 'Activo'}">Inactivo</span>
+                            </td>
+                            <td>
+                                <div class="actions">
+                                    <a th:href="@{/usuarios/editar/{id}(id=${u.idUsuario})}" class="btn-edit">
+                                        <i class="fas fa-edit"></i> Editar
+                                    </a>
+                                    <a th:href="@{/usuarios/cambiar-password/{id}(id=${u.idUsuario})}" 
+                                       class="btn-view" style="background: #fff3e0; color: #e65100;">
+                                        <i class="fas fa-key"></i> Contraseña
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

@@ -1,0 +1,214 @@
+<!-- src/main/resources/templates/dashboard.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Repuestos Motos</title>
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">🏍️</div>
+                <h2>Tienda de <span>Repuestos</span></h2>
+            </div>
+            
+            <div class="sidebar-user">
+                <div class="user-avatar">
+                    <span th:text="${usuario.nombreCompleto.charAt(0)}"></span>
+                </div>
+                <div class="user-info">
+                    <p class="user-name" th:text="${usuario.nombreCompleto}"></p>
+                    <p class="user-email" th:text="${usuario.email}"></p>
+                    <span class="user-status">● En línea</span>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <p class="nav-title">MENÚ PRINCIPAL</p>
+                <ul>
+                    <li><a href="/dashboard" class="active"><i class="fas fa-home"></i> Dashboard</a></li>
+                    <li><a href="/ventas"><i class="fas fa-shopping-cart"></i> Ventas</a></li>
+                    <li><a href="/productos"><i class="fas fa-boxes"></i> Inventario</a></li>
+                    <li><a href="/productos"><i class="fas fa-tag"></i> Productos</a></li>
+                    <li><a href="/clientes"><i class="fas fa-users"></i> Clientes</a></li>
+                    <li><a href="/proveedores"><i class="fas fa-truck"></i> Proveedores</a></li>
+                    <li><a href="/bitacora"><i class="fas fa-history"></i> Bitácora</a></li>
+                </ul>
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="/logout" class="btn-logout-sidebar">
+                    <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                </a>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content-dashboard">
+            <!-- Header -->
+            <header class="dashboard-header">
+                <div class="header-left">
+                    <h1>Dashboard</h1>
+                    <p class="breadcrumb">Inicio / Dashboard</p>
+                </div>
+                <div class="header-right">
+                    <span class="header-date" th:text="${#temporals.format(#temporals.createNow(), 'dd/MM/yyyy HH:mm')}"></span>
+                </div>
+            </header>
+
+            <!-- CARDS -->
+            <section class="cards-grid">
+                <div class="card card-purple">
+                    <div class="card-icon"><i class="fas fa-shopping-cart"></i></div>
+                    <div class="card-body">
+                        <h3>VENTAS DEL DÍA</h3>
+                        <p class="card-number">$ <span th:text="${stats.ventasHoy}">0.00</span></p>
+                        <small>↑ 12% vs ayer</small>
+                    </div>
+                </div>
+
+                <div class="card card-blue">
+                    <div class="card-icon"><i class="fas fa-calendar-alt"></i></div>
+                    <div class="card-body">
+                        <h3>VENTAS DEL MES</h3>
+                        <p class="card-number">$ <span th:text="${stats.ventasMes}">0.00</span></p>
+                        <small>↑ 8% vs mes anterior</small>
+                    </div>
+                </div>
+
+                <div class="card card-green">
+                    <div class="card-icon"><i class="fas fa-box"></i></div>
+                    <div class="card-body">
+                        <h3>PRODUCTOS</h3>
+                        <p class="card-number" th:text="${stats.totalProductos}">0</p>
+                        <small>Total en inventario</small>
+                    </div>
+                </div>
+
+                <div class="card card-orange">
+                    <div class="card-icon"><i class="fas fa-users"></i></div>
+                    <div class="card-body">
+                        <h3>CLIENTES</h3>
+                        <p class="card-number" th:text="${stats.totalClientes}">0</p>
+                        <small>Clientes registrados</small>
+                    </div>
+                </div>
+            </section>
+
+            <!-- GRÁFICO + ALERTAS -->
+            <section class="dashboard-row">
+                <!-- Gráfico -->
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3>VENTAS DE LOS ÚLTIMOS 7 DÍAS</h3>
+                        <a href="/ventas" class="btn-view-all">Ver todas →</a>
+                    </div>
+                    <div style="position: relative; height: 220px;">
+                        <canvas id="ventasChart"></canvas>
+                    </div>
+                    <div class="chart-legend">
+                        <span><span class="dot purple"></span> Ventas ($)</span>
+                    </div>
+                </div>
+
+                <!-- Alertas -->
+                <div class="alerts-container">
+                    <h3>Alertas</h3>
+                    
+                    <div class="alert-item alert-stock">
+                        <div class="alert-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                        <div class="alert-content">
+                            <p class="alert-title">Stock bajo</p>
+                            <p class="alert-desc"><span th:text="${stats.productosStockBajo}">0</span> productos con stock bajo</p>
+                            <a href="/productos" class="alert-link">Ver más →</a>
+                        </div>
+                    </div>
+
+                    <div class="alert-item alert-sales">
+                        <div class="alert-icon"><i class="fas fa-chart-line"></i></div>
+                        <div class="alert-content">
+                            <p class="alert-title">Ventas del día</p>
+                            <p class="alert-desc"><span th:text="${stats.cantidadVentasHoy}">0</span> ventas hoy</p>
+                            <a href="/ventas" class="alert-link">Ver detalle →</a>
+                        </div>
+                    </div>
+
+                    <div class="alert-item alert-report">
+                        <div class="alert-icon"><i class="fas fa-file-alt"></i></div>
+                        <div class="alert-content">
+                            <p class="alert-title">Reporte de Ventas</p>
+                            <p class="alert-desc">Ver todas las ventas</p>
+                            <a href="/ventas" class="alert-link">Ver reporte →</a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // ============================================
+        // GRÁFICA DE VENTAS - DATOS REALES
+        // ============================================
+        document.addEventListener('DOMContentLoaded', function() {
+            const ctx = document.getElementById('ventasChart').getContext('2d');
+            
+            // Mostrar gráfica vacía mientras carga
+            const chart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
+                    datasets: [{
+                        label: 'Ventas ($)',
+                        data: [0, 0, 0, 0, 0, 0, 0],
+                        backgroundColor: 'rgba(102, 126, 234, 0.7)',
+                        borderColor: '#667eea',
+                        borderWidth: 2,
+                        borderRadius: 6,
+                        maxBarThickness: 40
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '$ ' + value;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Cargar datos reales desde el backend
+            fetch('/api/ventas-7dias')
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Datos de la gráfica:', data);
+                    
+                    if (data && data.length > 0) {
+                        chart.data.labels = data.map(d => d.dia);
+                        chart.data.datasets[0].data = data.map(d => d.total);
+                        chart.update();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error al cargar datos de la gráfica:', error);
+                });
+        });
+    </script>
+</body>
+</html>

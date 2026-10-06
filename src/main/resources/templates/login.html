@@ -1,0 +1,63 @@
+<!-- src/main/resources/templates/login.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Repuestos Motos</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body class="login-page">
+    <div class="login-container">
+        <!-- Logo -->
+        <div class="login-header">
+            <div class="login-logo">🏍️</div>
+            <h1>Sistema de Gestión</h1>
+            <p class="subtitle">TIENDA DE REPUESTOS</p>
+        </div>
+
+        <!-- Título -->
+        <h2 class="login-title">Iniciar Sesión</h2>
+        <p class="login-desc">Ingrese sus credenciales para acceder al sistema</p>
+
+        <!-- Mensajes -->
+        <div th:if="${param.logout}" class="success-message">
+            ✅ Sesión cerrada exitosamente
+        </div>
+        
+        <div th:if="${error}" class="error-message">
+            ❌ <span th:text="${error}"></span>
+        </div>
+
+        <!-- Formulario -->
+        <form th:action="@{/login}" method="post">
+            <div class="form-group">
+                <label for="usuario">👤 Usuario</label>
+                <input type="text" id="usuario" name="usuario" required placeholder="Ingrese su usuario" autofocus>
+            </div>
+            
+            <div class="form-group">
+                <label for="contrasena">🔒 Contraseña</label>
+                <input type="password" id="contrasena" name="contrasena" required placeholder="Ingrese su contraseña">
+            </div>
+            
+            <div class="form-group">
+                <label for="rol">🎯 Rol</label>
+                <select id="rol" name="rol" class="form-select">
+                    <option value="">Seleccione su rol</option>
+                    <option value="Administrador">Administrador</option>
+                    <option value="Vendedor">Vendedor</option>
+                    <option value="Almacenero">Almacenero</option>
+                </select>
+            </div>
+            
+            <button type="submit" class="btn-login">Ingresar</button>
+        </form>
+
+        <!-- Footer -->
+        <div class="login-footer">
+            <p>© 2024 Tienda de Repuestos - Todos los derechos reservados</p>
+        </div>
+    </div>
+</body>
+</html>

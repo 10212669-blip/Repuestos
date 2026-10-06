@@ -1,0 +1,348 @@
+<!-- src/main/resources/templates/venta_form.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${titulo} + ' - Repuestos Motos'"></title>
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .product-table {
+            margin: 20px 0;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .product-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .product-table th {
+            background: #f8f9fa;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #555;
+        }
+        .product-table td {
+            padding: 12px;
+            border-top: 1px solid #eee;
+        }
+        .product-table .btn-remove {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .product-table .btn-remove:hover {
+            background: #c82333;
+        }
+        .btn-add-product {
+            background: #22c55e;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background 0.3s;
+        }
+        .btn-add-product:hover {
+            background: #16a34a;
+        }
+        .totales {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        .totales .row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .totales .row.total {
+            font-size: 20px;
+            font-weight: 700;
+            border-bottom: none;
+            padding-top: 15px;
+        }
+        .totales .label {
+            color: #666;
+        }
+        .totales .value {
+            color: #333;
+            font-weight: 600;
+        }
+        .totales .value.total {
+            color: #667eea;
+        }
+        .form-row-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+            align-items: end;
+        }
+        @media (max-width: 768px) {
+            .form-row-3 {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">🏍️</div>
+                <h2>Tienda de <span>Repuestos</span></h2>
+            </div>
+            
+            <div class="sidebar-user">
+                <div class="user-avatar">
+                    <span th:text="${usuario.nombreCompleto.charAt(0)}"></span>
+                </div>
+                <div class="user-info">
+                    <p class="user-name" th:text="${usuario.nombreCompleto}"></p>
+                    <p class="user-email" th:text="${usuario.email}"></p>
+                    <span class="user-status">● En línea</span>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <p class="nav-title">MENÚ PRINCIPAL</p>
+                <ul>
+                    <li><a href="/dashboard"><i class="fas fa-home"></i> Dashboard</a></li>
+                    <li><a href="/ventas" class="active"><i class="fas fa-shopping-cart"></i> Ventas</a></li>
+                    <li><a href="/productos"><i class="fas fa-boxes"></i> Inventario</a></li>
+                    <li><a href="/productos"><i class="fas fa-tag"></i> Productos</a></li>
+                    <li><a href="/clientes"><i class="fas fa-users"></i> Clientes</a></li>
+                    <li><a href="/proveedores"><i class="fas fa-truck"></i> Proveedores</a></li>
+                    <li><a href="/bitacora"><i class="fas fa-history"></i> Bitácora</a></li>
+                </ul>
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="/logout" class="btn-logout-sidebar">
+                    <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                </a>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content-dashboard">
+            <div class="form-container">
+                <div class="table-header">
+                    <h3><i class="fas fa-shopping-cart"></i> <span th:text="${titulo}"></span></h3>
+                    <a href="/ventas" class="btn-add"><i class="fas fa-arrow-left"></i> Volver</a>
+                </div>
+
+                <form th:action="@{/ventas/guardar}" th:object="${venta}" method="post">
+                    <input type="hidden" th:field="*{idVenta}">
+                    <input type="hidden" name="usuario.idUsuario" th:value="${usuario.idUsuario}">
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Cliente:</label>
+                            <select th:field="*{cliente.idCliente}">
+                                <option value="">Cliente General</option>
+                                <option th:each="c : ${clientes}" 
+                                        th:value="${c.idCliente}" 
+                                        th:text="${c.nombreCompleto + ' - ' + c.telefono}">
+                                </option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Método de Pago:</label>
+                            <select th:field="*{metodoPago}">
+                                <option value="Efectivo">💵 Efectivo</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Tipo de Comprobante:</label>
+                            <select th:field="*{tipoComprobante}">
+                                <option value="Boleta">🧾 Boleta</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Número de Comprobante:</label>
+                            <input type="text" th:field="*{numeroComprobante}" placeholder="Ej: 001-0001">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Observaciones:</label>
+                        <textarea th:field="*{observaciones}" rows="2" placeholder="Observaciones de la venta..."></textarea>
+                    </div>
+
+                    <!-- Productos -->
+                    <h3 style="margin-top: 30px; margin-bottom: 15px;">📦 Productos</h3>
+                    
+                    <div class="form-row-3">
+                        <div class="form-group">
+                            <label>Producto:</label>
+                            <select id="productoSelect" onchange="cargarPrecio()">
+                                <option value="">Seleccionar producto...</option>
+                                <option th:each="p : ${productos}" 
+                                        th:value="${p.idProducto}" 
+                                        th:text="${p.codigoProducto + ' - ' + p.nombreProducto + ' (Stock: ' + p.stockActual + ')'}"
+                                        th:data-precio="${p.precioVenta}">
+                                </option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Cantidad:</label>
+                            <input type="number" id="cantidadProducto" value="1" min="1">
+                        </div>
+                        <div class="form-group">
+                            <label>Precio Unitario ($):</label>
+                            <input type="number" id="precioProducto" step="0.01" readonly>
+                        </div>
+                    </div>
+                    <div style="text-align: right; margin-bottom: 15px;">
+                        <button type="button" class="btn-add-product" onclick="agregarProducto()"><i class="fas fa-plus"></i> Agregar Producto</button>
+                    </div>
+
+                    <!-- Tabla de productos -->
+                    <div class="product-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Producto</th>
+                                    <th>Cantidad</th>
+                                    <th>Precio Unit.</th>
+                                    <th>Subtotal</th>
+                                    <th>Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody id="detalleBody">
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Totales -->
+                    <div class="totales">
+                        <div class="row">
+                            <span class="label">Subtotal:</span>
+                            <span class="value" id="subtotalLabel">$ 0.00</span>
+                        </div>
+                        <div class="row">
+                            <span class="label">IVA (18%):</span>
+                            <span class="value" id="igvLabel">$ 0.00</span>
+                        </div>
+                        <div class="row total">
+                            <span class="label">TOTAL:</span>
+                            <span class="value total" id="totalLabel">$ 0.00</span>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-save"><i class="fas fa-save"></i> Registrar Venta</button>
+                        <a href="/ventas" class="btn-cancel"><i class="fas fa-times"></i> Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        let productos = [];
+
+        function cargarPrecio() {
+            const select = document.getElementById('productoSelect');
+            const precioInput = document.getElementById('precioProducto');
+            const selectedOption = select.options[select.selectedIndex];
+            if (selectedOption && selectedOption.dataset.precio) {
+                precioInput.value = selectedOption.dataset.precio;
+            } else {
+                precioInput.value = '';
+            }
+        }
+
+        function agregarProducto() {
+            const select = document.getElementById('productoSelect');
+            const cantidad = document.getElementById('cantidadProducto');
+            const precio = document.getElementById('precioProducto');
+            
+            const productoId = select.value;
+            const productoNombre = select.options[select.selectedIndex]?.text || '';
+            const cantidadVal = parseInt(cantidad.value);
+            const precioVal = parseFloat(precio.value);
+            
+            if (!productoId || !cantidadVal || !precioVal) {
+                alert('Selecciona un producto y cantidad válida');
+                return;
+            }
+            
+            if (productos.find(p => p.id === productoId)) {
+                alert('El producto ya fue agregado');
+                return;
+            }
+            
+            const subtotal = cantidadVal * precioVal;
+            
+            productos.push({
+                id: productoId,
+                nombre: productoNombre,
+                cantidad: cantidadVal,
+                precio: precioVal,
+                subtotal: subtotal
+            });
+            
+            renderizarDetalles();
+            calcularTotales();
+            
+            select.value = '';
+            document.getElementById('precioProducto').value = '';
+            cantidad.value = 1;
+        }
+
+        function eliminarProducto(index) {
+            productos.splice(index, 1);
+            renderizarDetalles();
+            calcularTotales();
+        }
+
+        function renderizarDetalles() {
+            const tbody = document.getElementById('detalleBody');
+            tbody.innerHTML = '';
+            
+            productos.forEach((p, index) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${p.nombre}</td>
+                    <td>${p.cantidad}</td>
+                    <td>$ ${p.precio.toFixed(2)}</td>
+                    <td>$ ${p.subtotal.toFixed(2)}</td>
+                    <td>
+                        <button type="button" class="btn-remove" onclick="eliminarProducto(${index})">Eliminar</button>
+                        <input type="hidden" name="productos" value="${p.id}">
+                        <input type="hidden" name="cantidades" value="${p.cantidad}">
+                        <input type="hidden" name="precios" value="${p.precio}">
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function calcularTotales() {
+            const subtotal = productos.reduce((sum, p) => sum + p.subtotal, 0);
+            const igv = subtotal * 0.18;
+            const total = subtotal + igv;
+            
+            document.getElementById('subtotalLabel').textContent = '$ ' + subtotal.toFixed(2);
+            document.getElementById('igvLabel').textContent = '$ ' + igv.toFixed(2);
+            document.getElementById('totalLabel').textContent = '$ ' + total.toFixed(2);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,105 @@
+<!-- src/main/resources/templates/proveedores.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${titulo} + ' - Repuestos Motos'"></title>
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">🏍️</div>
+                <h2>Tienda de <span>Repuestos</span></h2>
+            </div>
+            
+            <div class="sidebar-user">
+                <div class="user-avatar">
+                    <span th:text="${usuario.nombreCompleto.charAt(0)}"></span>
+                </div>
+                <div class="user-info">
+                    <p class="user-name" th:text="${usuario.nombreCompleto}"></p>
+                    <p class="user-email" th:text="${usuario.email}"></p>
+                    <span class="user-status">● En línea</span>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <p class="nav-title">MENÚ PRINCIPAL</p>
+                <ul>
+                    <li><a href="/dashboard"><i class="fas fa-home"></i> Dashboard</a></li>
+                    <li><a href="/ventas"><i class="fas fa-shopping-cart"></i> Ventas</a></li>
+                    <li><a href="/productos"><i class="fas fa-boxes"></i> Inventario</a></li>
+                    <li><a href="/productos"><i class="fas fa-tag"></i> Productos</a></li>
+                    <li><a href="/clientes"><i class="fas fa-users"></i> Clientes</a></li>
+                    <li><a href="/proveedores" class="active"><i class="fas fa-truck"></i> Proveedores</a></li>
+                    <li><a href="/bitacora"><i class="fas fa-history"></i> Bitácora</a></li>
+                </ul>
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="/logout" class="btn-logout-sidebar">
+                    <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                </a>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content-dashboard">
+            <div class="table-container">
+                <div class="table-header">
+                    <h3><i class="fas fa-truck"></i> Lista de Proveedores</h3>
+                    <a href="/proveedores/nuevo" class="btn-add"><i class="fas fa-plus"></i> Nuevo Proveedor</a>
+                </div>
+
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Empresa</th>
+                            <th>RUC</th>
+                            <th>Contacto</th>
+                            <th>Teléfono</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="p : ${proveedores}">
+                            <td th:text="${p.codigoProveedor}"></td>
+                            <td th:text="${p.nombreEmpresa}"></td>
+                            <td th:text="${p.ruc}"></td>
+                            <td th:text="${p.contactoNombre}"></td>
+                            <td th:text="${p.contactoTelefono}"></td>
+                            <td>
+                                <span class="badge badge-success" th:if="${p.estado == 'Activo'}">Activo</span>
+                                <span class="badge badge-danger" th:unless="${p.estado == 'Activo'}">Inactivo</span>
+                            </td>
+                            <td>
+                                <div class="actions">
+                                    <a th:href="@{/proveedores/editar/{id}(id=${p.idProveedor})}" class="btn-edit"><i class="fas fa-edit"></i> Editar</a>
+                                    <a th:href="@{/proveedores/eliminar/{id}(id=${p.idProveedor})}" 
+                                       class="btn-delete" 
+                                       onclick="return confirm('¿Estás seguro de desactivar este proveedor?')">
+                                       <i class="fas fa-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr th:if="${proveedores.isEmpty()}">
+                            <td colspan="7" style="text-align: center; padding: 40px; color: #999;">
+                                📭 No hay proveedores registrados. 
+                                <a href="/proveedores/nuevo" style="color: #667eea;">Crear el primero</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+</body>
+</html>
