@@ -1,10 +1,7 @@
-// com.lixy.sistemaayd.controller/ProductoController.java
+// com.brayan.sistemaayd.controller/ProductoController.java
 package com.brayan.sistemaayd.controller;
 
-import com.brayan.sistemaayd.entity.Categoria;
-import com.brayan.sistemaayd.entity.Marca;
 import com.brayan.sistemaayd.entity.Producto;
-import com.brayan.sistemaayd.entity.Proveedor;
 import com.brayan.sistemaayd.entity.Usuario;
 import com.brayan.sistemaayd.service.CategoriaService;
 import com.brayan.sistemaayd.service.MarcaService;
@@ -33,7 +30,9 @@ public class ProductoController {
     @Autowired
     private ProveedorService proveedorService;
     
-    // Listar productos
+    // ============================================
+    // LISTAR PRODUCTOS
+    // ============================================
     @GetMapping
     public String listar(HttpSession session, Model model) {
         Usuario usuario = (Usuario) session.getAttribute("usuario");
@@ -48,7 +47,34 @@ public class ProductoController {
         return "productos";
     }
     
-    // Mostrar formulario de nuevo producto
+    // ============================================
+    // ✅ BUSCAR PRODUCTOS POR NOMBRE
+    // ============================================
+    @GetMapping("/buscar")
+    public String buscar(@RequestParam(value = "q", required = false) String q,
+                         HttpSession session, Model model) {
+        Usuario usuario = (Usuario) session.getAttribute("usuario");
+        if (usuario == null) {
+            return "redirect:/login";
+        }
+        
+        List<Producto> productos;
+        if (q != null && !q.trim().isEmpty()) {
+            productos = productoService.buscarPorNombre(q.trim());
+            model.addAttribute("busqueda", q);
+        } else {
+            productos = productoService.listarActivos();
+        }
+        
+        model.addAttribute("usuario", usuario);
+        model.addAttribute("productos", productos);
+        model.addAttribute("titulo", "Productos");
+        return "productos";
+    }
+    
+    // ============================================
+    // NUEVO PRODUCTO
+    // ============================================
     @GetMapping("/nuevo")
     public String nuevo(HttpSession session, Model model) {
         Usuario usuario = (Usuario) session.getAttribute("usuario");
@@ -65,7 +91,9 @@ public class ProductoController {
         return "producto_form";
     }
     
-    // Guardar producto
+    // ============================================
+    // GUARDAR PRODUCTO
+    // ============================================
     @PostMapping("/guardar")
     public String guardar(@ModelAttribute Producto producto, HttpSession session) {
         Usuario usuario = (Usuario) session.getAttribute("usuario");
@@ -77,7 +105,9 @@ public class ProductoController {
         return "redirect:/productos";
     }
     
-    // Mostrar formulario de edición
+    // ============================================
+    // EDITAR PRODUCTO
+    // ============================================
     @GetMapping("/editar/{id}")
     public String editar(@PathVariable Integer id, HttpSession session, Model model) {
         Usuario usuario = (Usuario) session.getAttribute("usuario");
@@ -99,7 +129,9 @@ public class ProductoController {
         return "producto_form";
     }
     
-    // Eliminar producto
+    // ============================================
+    // ELIMINAR PRODUCTO
+    // ============================================
     @GetMapping("/eliminar/{id}")
     public String eliminar(@PathVariable Integer id) {
         productoService.desactivar(id);

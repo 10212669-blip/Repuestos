@@ -1,4 +1,4 @@
-// com.lixy.sistemaayd/repository/VentaRepository.java
+// com.brayan.sistemaayd.repository/VentaRepository.java
 package com.brayan.sistemaayd.repository;
 
 import com.brayan.sistemaayd.entity.Venta;
@@ -14,6 +14,10 @@ import java.util.Optional;
 @Repository
 public interface VentaRepository extends JpaRepository<Venta, Integer> {
     
+    // ============================================
+    // BÚSQUEDAS BÁSICAS
+    // ============================================
+    
     Optional<Venta> findByCodigoVenta(String codigoVenta);
     
     List<Venta> findByEstadoVenta(String estado);
@@ -25,6 +29,10 @@ public interface VentaRepository extends JpaRepository<Venta, Integer> {
     
     @Query("SELECT v FROM Venta v WHERE v.usuario.idUsuario = :idUsuario ORDER BY v.fechaVenta DESC")
     List<Venta> findVentasByUsuario(@Param("idUsuario") Integer idUsuario);
+    
+    // ============================================
+    // ESTADÍSTICAS
+    // ============================================
     
     @Query(value = "SELECT COALESCE(SUM(v.total), 0) FROM tienda.ventas v WHERE v.estado_venta = 'Completado' AND DATE(v.fecha_venta) = CURRENT_DATE", nativeQuery = true)
     BigDecimal sumTotalVentasHoy();
@@ -38,11 +46,28 @@ public interface VentaRepository extends JpaRepository<Venta, Integer> {
     @Query("SELECT COALESCE(COUNT(v), 0) FROM Venta v WHERE v.estadoVenta = 'Completado' AND v.fechaVenta BETWEEN :inicio AND :fin")
     Long countVentasEntreFechas(@Param("inicio") LocalDateTime inicio, @Param("fin") LocalDateTime fin);
     
+    // ============================================
+    // GRÁFICA
+    // ============================================
+    
     @Query("SELECT FUNCTION('DATE', v.fechaVenta) as dia, COALESCE(SUM(v.total), 0) as total " +
            "FROM Venta v WHERE v.estadoVenta = 'Completado' AND v.fechaVenta >= :fechaInicio " +
            "GROUP BY FUNCTION('DATE', v.fechaVenta) ORDER BY dia ASC")
     List<Object[]> findVentasAgrupadasPorDia(@Param("fechaInicio") LocalDateTime fechaInicio);
     
+    // ============================================
+    // MÉTRICAS AVANZADAS
+    // ============================================
+    
     @Query(value = "SELECT COALESCE(AVG(v.total), 0) FROM tienda.ventas v WHERE v.estado_venta = 'Completado' AND DATE(v.fecha_venta) = CURRENT_DATE", nativeQuery = true)
     BigDecimal avgTotalVentasHoy();
+    
+    // ============================================
+    // ✅ BÚSQUEDA POR NOMBRE DE CLIENTE
+    // ============================================
+    
+    @Query("SELECT v FROM Venta v WHERE " +
+           "LOWER(v.cliente.nombreCompleto) LIKE LOWER(CONCAT('%', :nombreCliente, '%')) " +
+           "ORDER BY v.fechaVenta DESC")
+    List<Venta> buscarPorNombreCliente(@Param("nombreCliente") String nombreCliente);
 }

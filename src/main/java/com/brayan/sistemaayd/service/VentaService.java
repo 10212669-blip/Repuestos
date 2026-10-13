@@ -1,4 +1,4 @@
-// com.lixy.sistemaayd/service/VentaService.java
+// com.brayan.sistemaayd.service/VentaService.java
 package com.brayan.sistemaayd.service;
 
 import com.brayan.sistemaayd.entity.DetalleVenta;
@@ -90,6 +90,16 @@ public class VentaService {
     
     public Optional<Venta> buscarPorCodigo(String codigo) {
         return ventaRepository.findByCodigoVenta(codigo);
+    }
+    
+    // ✅ BÚSQUEDA POR NOMBRE DE CLIENTE
+    public List<Venta> buscarPorNombreCliente(String nombreCliente) {
+        try {
+            return ventaRepository.buscarPorNombreCliente(nombreCliente);
+        } catch (Exception e) {
+            System.err.println("Error al buscar ventas por cliente: " + e.getMessage());
+            return new ArrayList<>();
+        }
     }
     
     // ============================================

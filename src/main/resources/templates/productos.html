@@ -53,7 +53,29 @@
             <div class="table-container">
                 <div class="table-header">
                     <h3><i class="fas fa-boxes"></i> Lista de Productos</h3>
-                    <a href="/productos/nuevo" class="btn-add"><i class="fas fa-plus"></i> Nuevo Producto</a>
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <form action="/productos/buscar" method="get" style="display: flex; gap: 6px; margin: 0;">
+                            <input type="text" name="q" 
+                                   th:value="${busqueda}"
+                                   placeholder="🔍 Buscar por nombre..." 
+                                   style="padding: 8px 15px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; width: 220px; margin: 0;">
+                            <button type="submit" class="btn-add" style="background: #667eea; padding: 8px 14px;">
+                                <i class="fas fa-search"></i>
+                            </button>
+                            <a th:if="${busqueda != null && !busqueda.isEmpty()}" 
+                               href="/productos" class="btn-add" style="background: #6c757d; padding: 8px 14px;">
+                                <i class="fas fa-times"></i>
+                            </a>
+                        </form>
+                        <a href="/productos/nuevo" class="btn-add"><i class="fas fa-plus"></i> Nuevo Producto</a>
+                    </div>
+                </div>
+
+                <!-- Mensaje de resultados -->
+                <div th:if="${busqueda != null && !busqueda.isEmpty()}" 
+                     style="background: #e3f2fd; color: #0d47a1; padding: 10px 15px; border-radius: 8px; margin-bottom: 15px;">
+                    🔍 Resultados para: <strong th:text="${busqueda}"></strong>
+                    (<span th:text="${productos.size()}"></span> encontrados)
                 </div>
 
                 <table class="table">
@@ -92,8 +114,7 @@
                         </tr>
                         <tr th:if="${productos.isEmpty()}">
                             <td colspan="7" style="text-align: center; padding: 40px; color: #999;">
-                                📭 No hay productos registrados. 
-                                <a href="/productos/nuevo" style="color: #667eea;">Crear el primero</a>
+                                📭 No se encontraron productos
                             </td>
                         </tr>
                     </tbody>

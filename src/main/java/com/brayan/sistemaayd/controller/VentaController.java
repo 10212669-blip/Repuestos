@@ -1,4 +1,4 @@
-// com.lixy.sistemaayd/controller/VentaController.java
+// com.brayan.sistemaayd/controller/VentaController.java
 package com.brayan.sistemaayd.controller;
 
 import com.brayan.sistemaayd.entity.DetalleVenta;
@@ -54,6 +54,31 @@ public class VentaController {
         }
 
         List<Venta> ventas = ventaService.listarTodas();
+        model.addAttribute("usuario", usuario);
+        model.addAttribute("ventas", ventas);
+        model.addAttribute("titulo", "Ventas");
+        return "ventas";
+    }
+
+    // ============================================
+    // ✅ BUSCAR VENTAS POR NOMBRE DE CLIENTE
+    // ============================================
+    @GetMapping("/buscar")
+    public String buscar(@RequestParam(value = "q", required = false) String q,
+                         HttpSession session, Model model) {
+        Usuario usuario = (Usuario) session.getAttribute("usuario");
+        if (usuario == null) {
+            return "redirect:/login";
+        }
+
+        List<Venta> ventas;
+        if (q != null && !q.trim().isEmpty()) {
+            ventas = ventaService.buscarPorNombreCliente(q.trim());
+            model.addAttribute("busqueda", q);
+        } else {
+            ventas = ventaService.listarTodas();
+        }
+
         model.addAttribute("usuario", usuario);
         model.addAttribute("ventas", ventas);
         model.addAttribute("titulo", "Ventas");
@@ -125,7 +150,7 @@ public class VentaController {
         }
 
         Venta venta = ventaService.buscarPorId(id).orElse(null);
-        
+
         if (venta == null) {
             model.addAttribute("error", "Venta no encontrada con ID: " + id);
             model.addAttribute("usuario", usuario);

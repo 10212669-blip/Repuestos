@@ -1,4 +1,4 @@
-// com.lixy.sistemaayd.controller/ClienteController.java
+// com.brayan.sistemaayd.controller/ClienteController.java
 package com.brayan.sistemaayd.controller;
 
 import com.brayan.sistemaayd.entity.Cliente;
@@ -18,7 +18,9 @@ public class ClienteController {
     @Autowired
     private ClienteService clienteService;
     
-    // Listar clientes
+    // ============================================
+    // LISTAR CLIENTES
+    // ============================================
     @GetMapping
     public String listar(HttpSession session, Model model) {
         Usuario usuario = (Usuario) session.getAttribute("usuario");
@@ -33,7 +35,34 @@ public class ClienteController {
         return "clientes";
     }
     
-    // Mostrar formulario de nuevo cliente
+    // ============================================
+    // ✅ BUSCAR CLIENTES POR NOMBRE
+    // ============================================
+    @GetMapping("/buscar")
+    public String buscar(@RequestParam(value = "q", required = false) String q,
+                         HttpSession session, Model model) {
+        Usuario usuario = (Usuario) session.getAttribute("usuario");
+        if (usuario == null) {
+            return "redirect:/login";
+        }
+        
+        List<Cliente> clientes;
+        if (q != null && !q.trim().isEmpty()) {
+            clientes = clienteService.buscarPorNombre(q.trim());
+            model.addAttribute("busqueda", q);
+        } else {
+            clientes = clienteService.listarActivos();
+        }
+        
+        model.addAttribute("usuario", usuario);
+        model.addAttribute("clientes", clientes);
+        model.addAttribute("titulo", "Clientes");
+        return "clientes";
+    }
+    
+    // ============================================
+    // NUEVO CLIENTE
+    // ============================================
     @GetMapping("/nuevo")
     public String nuevo(HttpSession session, Model model) {
         Usuario usuario = (Usuario) session.getAttribute("usuario");
@@ -47,7 +76,9 @@ public class ClienteController {
         return "cliente_form";
     }
     
-    // Guardar cliente
+    // ============================================
+    // GUARDAR CLIENTE
+    // ============================================
     @PostMapping("/guardar")
     public String guardar(@ModelAttribute Cliente cliente, HttpSession session) {
         Usuario usuario = (Usuario) session.getAttribute("usuario");
@@ -59,7 +90,9 @@ public class ClienteController {
         return "redirect:/clientes";
     }
     
-    // Mostrar formulario de edición
+    // ============================================
+    // EDITAR CLIENTE
+    // ============================================
     @GetMapping("/editar/{id}")
     public String editar(@PathVariable Integer id, HttpSession session, Model model) {
         Usuario usuario = (Usuario) session.getAttribute("usuario");
@@ -78,7 +111,9 @@ public class ClienteController {
         return "cliente_form";
     }
     
-    // Desactivar cliente
+    // ============================================
+    // ELIMINAR CLIENTE
+    // ============================================
     @GetMapping("/eliminar/{id}")
     public String eliminar(@PathVariable Integer id) {
         clienteService.desactivar(id);

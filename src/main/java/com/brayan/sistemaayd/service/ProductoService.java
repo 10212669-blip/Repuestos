@@ -1,4 +1,4 @@
-// com.lixy.sistemaayd.service/ProductoService.java
+// com.brayan.sistemaayd.service/ProductoService.java
 package com.brayan.sistemaayd.service;
 
 import com.brayan.sistemaayd.entity.Producto;
@@ -32,8 +32,9 @@ public class ProductoService {
         return productoRepository.findByCodigoProducto(codigo);
     }
     
+    // ✅ BÚSQUEDA POR NOMBRE (usando el método del repositorio)
     public List<Producto> buscarPorNombre(String nombre) {
-        return productoRepository.findByNombreProductoContainingIgnoreCase(nombre);
+        return productoRepository.buscarPorNombre(nombre);
     }
     
     public List<Producto> productosConStockBajo() {

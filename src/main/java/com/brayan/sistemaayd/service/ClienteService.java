@@ -1,4 +1,4 @@
-// com.lixy.sistemaayd.service/ClienteService.java
+// com.brayan.sistemaayd.service/ClienteService.java
 package com.brayan.sistemaayd.service;
 
 import com.brayan.sistemaayd.entity.Cliente;
@@ -32,14 +32,14 @@ public class ClienteService {
         return clienteRepository.findByCodigoCliente(codigo);
     }
     
+    // ✅ BÚSQUEDA POR NOMBRE (usando el método del repositorio)
     public List<Cliente> buscarPorNombre(String nombre) {
-        return clienteRepository.findByNombreCompletoContainingIgnoreCase(nombre);
+        return clienteRepository.buscarPorNombre(nombre);
     }
     
     @Transactional
     public Cliente guardar(Cliente cliente) {
         if (cliente.getIdCliente() == null) {
-            // Generar código automático si no tiene
             if (cliente.getCodigoCliente() == null || cliente.getCodigoCliente().isEmpty()) {
                 long count = clienteRepository.count() + 1;
                 cliente.setCodigoCliente(String.format("CLI%04d", count));
